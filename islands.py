@@ -42,9 +42,10 @@ class CollectionOfIslands:
             self.nodes[island.getName()] = island
             self.edges[island.getName()] = {}
 
-    def add_edge(self, from_island, to_island, weight):
-        if from_island in self.nodes and to_island in self.nodes:
-            self.edges[from_island][to_island] = weight
+    def add_edge(self, from_island, to_island, distance):
+        if from_island.getName() in self.nodes and to_island.getName() in self.nodes:
+            route = Route(from_island, to_island, distance)
+            self.edges[from_island.getName()][to_island.getName()] = route
 
     def display_graph(self):
         for from_island, connections in self.edges.items():
