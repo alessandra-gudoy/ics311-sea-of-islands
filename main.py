@@ -20,3 +20,8 @@ print("Experiences Starting from New Zealand")
 experiences = islands.tourist_experience(new_zealand)
 for island, (total_time, num_experiences, path) in experiences.items():
     print(f"Island: {island}, Total Time: {total_time}, Number of Experiences: {num_experiences}, Path: {' -> '.join(path)}")
+
+# distances = islands.skills_across_islands("New Zealand")
+
+# for island_name, distance in distances.items():
+#     print(f"Distance from New Zealand to {island_name} to distribute knowledge/skills: {distance}")

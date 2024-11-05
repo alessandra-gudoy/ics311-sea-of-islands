@@ -1,23 +1,16 @@
-from heapq import heapify, heappop, heappush
+# islands.py
+
+import heapq
+from datetime import datetime
 
 class Island:
-    """
-        str name - name of the island
-        int population - population of the island
-        dictionary produced_resources - resources that the island produces
-                                         key = resource name, value = amount
-        dictionary natural_resources - resources that the island has
-                                        key = resource name, value = amount
-        dictionary experiences - experiences that the island has
-                                  key = experience name, value = time
-    """
-        
     def __init__(self, name, population, produced_resources, natural_resources, experiences):
         self.name = name
         self.population = population
         self.produced_resources = produced_resources
         self.natural_resources = natural_resources
         self.experiences = experiences
+        self.last_visited = None
 
     def getName(self):
         return self.name
@@ -33,6 +26,10 @@ class Island:
       
     def getExperiences(self):
         return self.experiences
+    
+    def set_last_visited(self, visit_time):
+        self.last_visited = visit_time
+
 
 class Route:
     def __init__(self, from_island, to_island, distance):
@@ -48,6 +45,7 @@ class Route:
 
     def getDistance(self):
         return self.distance
+
 
 class CollectionOfIslands:
     def __init__(self):
@@ -86,12 +84,12 @@ class CollectionOfIslands:
         experiences[source_node.getName()] = (total_time, num_experiences, [source_node.getName()])
         
         # add to queue, (total_time, num_experiences, path)
-        heappush(priority_queue, (total_time, num_experiences, [source_node.getName()]))
+        heapq.heappush(priority_queue, (total_time, num_experiences, [source_node.getName()]))
         print("Updated priority queue: ", priority_queue)
         
         while len(priority_queue) > 0:
             # get the item with the least total_time
-            current_time, current_num_experiences, current_path = heappop(priority_queue)
+            current_time, current_num_experiences, current_path = heapq.heappop(priority_queue)
             current_island = self.nodes[current_path[-1]]
             print("Pop from priority queue: ")
             print(f"Current Island: {current_island.getName()}, Current Time: {current_time}, Number of Experiences: {current_num_experiences}, Path: {' -> '.join(current_path)}")
@@ -108,7 +106,7 @@ class CollectionOfIslands:
                     update_num_experiences = current_num_experiences + 1
                     update_path = current_path + [current_island.getName()]
                     
-                    heappush(priority_queue, (update_time, update_num_experiences, update_path))
+                    heapq.heappush(priority_queue, (update_time, update_num_experiences, update_path))
                 
                 # get neighboring islands
                 for neighbor, route in self.edges[current_island.getName()].items():
@@ -117,6 +115,41 @@ class CollectionOfIslands:
                     
                     if neighbor not in experiences or (new_time < experiences[neighbor][0]):
                         new_path = current_path + [neighbor]
-                        heappush(priority_queue, (new_time, current_num_experiences, new_path))
+                        heapq.heappush(priority_queue, (new_time, current_num_experiences, new_path))
         
         return experiences
+
+    def skills_across_islands(self, starting_island):
+        # check if the starting island exists
+        if starting_island not in self.nodes:
+            return {}
+
+        # initialize distances and priority queue
+        distances = {island_name: float('inf') for island_name in self.nodes}
+        distances[starting_island] = 0
+        priority_queue = [(0, starting_island)]
+
+        while priority_queue:
+            current_distance, current_island = heapq.heappop(priority_queue)
+
+            # update the last visited time for the current island
+            self.nodes[current_island].set_last_visited(datetime.now())
+
+            # explore neighbors
+            for neighbor, route in self.edges[current_island].items():
+                new_distance = current_distance + route.getDistance()
+                if new_distance < distances[neighbor]:
+                    distances[neighbor] = new_distance
+                    heapq.heappush(priority_queue, (new_distance, neighbor))
+
+        # prioritize islands with higher populations by storing negative population values
+        prioritized_distances = {
+            island_name:
+            (distances[island_name], -self.nodes[island_name].population)
+            for island_name in distances
+        }
+
+        # sort the distances based on the prioritized criteria
+        sorted_distances = sorted(prioritized_distances.items(), key=lambda x: (x[1][0], x[1][1]))
+
+        return {island: dist[0] for island, dist in sorted_distances}
