@@ -8,7 +8,7 @@ class Island:
         self.name = name
         self.population = population
         self.produced_resources = produced_resources
-        self.natural_resources = natural_resources
+        self.natural_resources = set(natural_resources)  # Store natural resources as a set of strings
         self.experiences = experiences
         self.last_visited = None
 
@@ -17,19 +17,22 @@ class Island:
 
     def getPopulation(self):
         return self.population
-    
+
     def getProducedResources(self):
         return self.produced_resources
-    
+
     def getNaturalResources(self):
-        return self.natural_resources
-    
+        return list(self.natural_resources)
+
     def getExperiences(self):
         return self.experiences
     
     def set_last_visited(self, visit_time):
         self.last_visited = visit_time
 
+
+    def set_last_visited(self, visit_time):
+        self.last_visited = visit_time
 
 class Route:
     def __init__(self, from_island, to_island, distance):
@@ -154,3 +157,43 @@ class CollectionOfIslands:
         sorted_distances = sorted(prioritized_distances.items(), key=lambda x: (x[1][0], x[1][1]))
 
         return {island: dist[0] for island, dist in sorted_distances}
+
+    def resource_planting(self, source, resource):
+        distances = {node: float('inf') for node in self.nodes}
+        distances[source] = 0
+        predecessors = {node: None for node in self.nodes}
+        
+        if resource not in self.nodes[source].natural_resources:
+            self.nodes[source].natural_resources.add(resource)
+        
+        for _ in range(len(self.nodes) - 1):
+            for u in self.edges:
+                for v, route in self.edges[u].items():
+                    if distances[u] + route.getDistance() < distances[v]:
+                        distances[v] = distances[u] + route.getDistance()
+                        predecessors[v] = u
+        
+        for u in self.edges:
+            for v, route in self.edges[u].items():
+                if distances[u] + route.getDistance() < distances[v]:
+                    print("Graph contains a negative-weight cycle")
+                    return
+        
+        print(f"Initial resources at {source}: {self.nodes[source].natural_resources}")
+        for node in self.nodes:
+            if node != source:
+                print(f"Distributing {resource} to {node}")
+                current = node
+                path = []
+                while current != source:
+                    path.append(current)
+                    current = predecessors[current]
+                path.append(source)
+                path.reverse()
+                print(f"Path taken: {' -> '.join(path)}")
+                for island in path:
+                    if island != source:
+                        self.nodes[island].natural_resources.add(resource)
+                print(f"Canoe returning to {source} for more resources.")
+
+        return distances
