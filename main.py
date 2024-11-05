@@ -14,3 +14,8 @@ islands.add_edge(hawaii, maui, 500)
 islands.add_edge(new_zealand, maui, 1500)
 
 islands.display_graph()
+
+distances = islands.skills_across_islands("New Zealand")
+
+for island_name, distance in distances.items():
+    print(f"Distance from New Zealand to {island_name} to distribute knowledge/skills: {distance}")
