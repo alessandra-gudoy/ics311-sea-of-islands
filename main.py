@@ -14,7 +14,9 @@ islands.add_edge(hawaii, maui, 500)
 islands.add_edge(new_zealand, maui, 1500)
 
 islands.display_graph()
+print()
 
+print("Experiences Starting from New Zealand")
 experiences = islands.tourist_experience(new_zealand)
 for island, (total_time, num_experiences, path) in experiences.items():
     print(f"Island: {island}, Total Time: {total_time}, Number of Experiences: {num_experiences}, Path: {' -> '.join(path)}")

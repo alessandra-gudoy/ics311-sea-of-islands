@@ -70,6 +70,8 @@ class CollectionOfIslands:
                 print(f"{from_island} -> {to_island} with distance {route.getDistance()}")
     
     def tourist_experience(self, source_node):
+        print(f"Starting experience route from {source_node.getName()}")
+        
         experiences = {}
         priority_queue = []
         
@@ -77,20 +79,26 @@ class CollectionOfIslands:
         first_experiences = source_node.getExperiences()
         total_time = sum(first_experiences.values())
         num_experiences = len(first_experiences)
+        print(f"Starting Island: {source_node.getName()}, Total Time: {total_time}, Number of Experiences: {num_experiences}")
+        print(f"Experiences: {first_experiences}")
         
         # store the starting island's experience info
         experiences[source_node.getName()] = (total_time, num_experiences, [source_node.getName()])
         
         # add to queue, (total_time, num_experiences, path)
         heappush(priority_queue, (total_time, num_experiences, [source_node.getName()]))
+        print("Updated priority queue: ", priority_queue)
         
-        while len(priority_queue) != 0:
+        while len(priority_queue) > 0:
             # get the item with the least total_time
             current_time, current_num_experiences, current_path = heappop(priority_queue)
             current_island = self.nodes[current_path[-1]]
+            print("Pop from priority queue: ")
+            print(f"Current Island: {current_island.getName()}, Current Time: {current_time}, Number of Experiences: {current_num_experiences}, Path: {' -> '.join(current_path)}")
             
             # if path to the current island is better (less time) than recorded or not in experiences
             if (current_island.getName() not in experiences or current_time < experiences[current_island.getName()][0]):
+                print("Updating experiences for the current island")
                 # update experiences for the current island
                 experiences[current_island.getName()] = (current_time, current_num_experiences, current_path)
             
