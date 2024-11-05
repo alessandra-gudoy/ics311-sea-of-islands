@@ -23,7 +23,7 @@ class Island:
     
     def getNaturalResources(self):
         return self.natural_resources
-      
+    
     def getExperiences(self):
         return self.experiences
     
