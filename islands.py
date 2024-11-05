@@ -1,9 +1,21 @@
 class Island:
-    def __init__(self, name, population, produced_resources, natural_resources):
+    """
+        str name - name of the island
+        int population - population of the island
+        dictionary produced_resources - resources that the island produces
+                                         key = resource name, value = amount
+        dictionary natural_resources - resources that the island has
+                                        key = resource name, value = amount
+        dictionary experiences - experiences that the island has
+                                  key = experience name, value = time
+    """
+        
+    def __init__(self, name, population, produced_resources, natural_resources, experiences):
         self.name = name
         self.population = population
         self.produced_resources = produced_resources
         self.natural_resources = natural_resources
+        self.experiences = experiences
 
     def getName(self):
         return self.name
@@ -16,6 +28,9 @@ class Island:
     
     def getNaturalResources(self):
         return self.natural_resources
+      
+    def getExperiences(self):
+        return self.experiences
 
 class Route:
     def __init__(self, from_island, to_island, distance):
@@ -49,6 +64,6 @@ class CollectionOfIslands:
 
     def display_graph(self):
         for from_island, connections in self.edges.items():
-            for to_island, weight in connections.items():
-                print(f"{from_island} -> {to_island} with weight {weight}")
+            for to_island, route in connections.items():
+                print(f"{from_island} -> {to_island} with distance {route.getDistance()}")
 
