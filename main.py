@@ -22,7 +22,7 @@ print(f"Path: {' -> '.join(path)}")
 print(f"Experiences: {experiences}")
 print(f"Total Time: {time}")
 
-# distances = islands.skills_across_islands("New Zealand")
-
-# for island_name, distance in distances.items():
-#     print(f"Distance from New Zealand to {island_name} to distribute knowledge/skills: {distance}")
+print()
+distances = islands.skills_across_islands("New Zealand")
+for island_name, distance in distances.items():
+    print(f"Distance from New Zealand to {island_name} to distribute knowledge/skills: {distance}")
