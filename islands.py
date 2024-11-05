@@ -70,7 +70,6 @@ class CollectionOfIslands:
     def tourist_experience(self, source_node):
         print(f"Starting experience route from {source_node.getName()}")
         
-        experiences = {}
         priority_queue = []
         
         # starting island's experiences
@@ -80,12 +79,13 @@ class CollectionOfIslands:
         print(f"Starting Island: {source_node.getName()}, Total Time: {total_time}, Number of Experiences: {num_experiences}")
         print(f"Experiences: {first_experiences}")
         
-        # store the starting island's experience info
-        experiences[source_node.getName()] = (total_time, num_experiences, [source_node.getName()])
-        
         # add to queue, (total_time, num_experiences, path)
         heapq.heappush(priority_queue, (total_time, num_experiences, [source_node.getName()]))
         print("Updated priority queue: ", priority_queue)
+        
+        path = []
+        experience_count = 0
+        time = float('inf')
         
         while len(priority_queue) > 0:
             # get the item with the least total_time
@@ -95,29 +95,30 @@ class CollectionOfIslands:
             print(f"Current Island: {current_island.getName()}, Current Time: {current_time}, Number of Experiences: {current_num_experiences}, Path: {' -> '.join(current_path)}")
             
             # if path to the current island is better (less time) than recorded or not in experiences
-            if (current_island.getName() not in experiences or current_time < experiences[current_island.getName()][0]):
+            if (current_num_experiences > experience_count or (current_num_experiences == experience_count and current_time < time)):
                 print("Updating experiences for the current island")
-                # update experiences for the current island
-                experiences[current_island.getName()] = (current_time, current_num_experiences, current_path)
+                # update for the current island with better experiences/times
+                experience_count = current_num_experiences
+                time = current_time
+                path = current_path
             
-                # experiences of the current island and add them to the queue
-                for exp, exp_time in current_island.getExperiences().items():
-                    update_time = current_time + exp_time
-                    update_num_experiences = current_num_experiences + 1
-                    update_path = current_path + [current_island.getName()]
-                    
-                    heapq.heappush(priority_queue, (update_time, update_num_experiences, update_path))
-                
                 # get neighboring islands
                 for neighbor, route in self.edges[current_island.getName()].items():
+                    print("Neighbor: ", neighbor)
                     new_time = current_time + route.getDistance()
                     neighbor_island = self.nodes[neighbor]
                     
-                    if neighbor not in experiences or (new_time < experiences[neighbor][0]):
-                        new_path = current_path + [neighbor]
-                        heapq.heappush(priority_queue, (new_time, current_num_experiences, new_path))
+                    # get new experiences
+                    new_experiences = set(current_path)
+                    for experience in neighbor_island.getExperiences().keys():
+                        new_experiences.add(experience)
+                    
+                    update_experience_count = len(new_experiences)
+                    
+                    heapq.heappush(priority_queue, (new_time, update_experience_count, current_path + [neighbor]))
+                    print("Updated priority queue: ", priority_queue)
         
-        return experiences
+        return path, experience_count, time
 
     def skills_across_islands(self, starting_island):
         # check if the starting island exists
